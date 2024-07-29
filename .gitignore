@@ -1,6 +1,6 @@
 go.sum
 
 
-.env*.local
+.env
 
 /tmp
