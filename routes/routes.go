@@ -6,12 +6,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kartik1112/OG-Chat-Backend/db"
+	"github.com/kartik1112/OG-Chat-Backend/middlewares"
 )
 
 func RegisterRoutes(server *gin.Engine) {
-	server.GET("/api/status", dbHealthCheck)
+	server.GET("/api/status", middlewares.Authenticate, dbHealthCheck)
 	server.POST("/api/users/register", signup)
 	server.POST("/api/users/login", login)
+	// authGroup := server.Group("/")
+	// authGroup.Use(middlewares.Authenticate)
+	// authGroup.GET("/api/users/protect", func(ctx *gin.Context) {
+	// 	ctx.JSON(http.StatusOK, gin.H{
+	// 		"message": "Route Protected",
+	// 	})
+	// })
 }
 
 func dbHealthCheck(ctx *gin.Context) {

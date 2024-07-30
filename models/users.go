@@ -10,16 +10,16 @@ import (
 
 type User struct {
 	UserID       int
-	Username     string
-	Email        string
-	PasswordHash string
+	Username     string `binding:"required"`
+	Email        string `binding:"required"`
+	PasswordHash string `binding:"required"`
 	AvatarUrl    string
 	Status       string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }
 
-func (u User) CreateUser() error {
+func (u *User) CreateUser() error {
 	query := `INSERT INTO public.users(userId, username, email, passwordHash, avatarUrl, status, createdat, updatedat) VALUES (
 		nextval('users_userid_seq'::regclass),$1 ,$2  ,$3  ,$4  ,$5  , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 		);`
@@ -34,18 +34,19 @@ func (u User) CreateUser() error {
 	return err
 }
 
-func (u User) ValidateUser() error {
-	query := `SELECT username, email, passwordhash
+func (u *User) ValidateUser() error {
+	query := `SELECT userid,username, email, passwordhash
 				FROM public.users WHERE username = $1 OR email = $2;`
 	row := db.DB.QueryRow(query, u.Username, u.Email)
-	var username, email, password string
-	err := row.Scan(&username, &email, &password)
+	var password string
+	err := row.Scan(&u.UserID, &u.Username, &u.Email, &password)
 	if err != nil {
 		return errors.New("invalid credentials")
 	}
-	if username == u.Username || email == u.Email {
-		err := utils.ValidatePassword(password, u.PasswordHash)
-		return err
-	}
-	return nil
+	err = utils.ValidatePassword(password, u.PasswordHash)
+	// return err
+	// if username == u.Username || email == u.Email {
+	// }
+
+	return err
 }

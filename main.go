@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/kartik1112/OG-Chat-Backend/db"
@@ -12,7 +10,7 @@ import (
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
+		panic("Error loading .env file")
 	}
 	db.InitDB()
 	server := gin.Default()
