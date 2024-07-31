@@ -10,16 +10,13 @@ import (
 )
 
 func RegisterRoutes(server *gin.Engine) {
-	server.GET("/api/status", middlewares.Authenticate, dbHealthCheck)
 	server.POST("/api/users/register", signup)
 	server.POST("/api/users/login", login)
-	// authGroup := server.Group("/")
-	// authGroup.Use(middlewares.Authenticate)
-	// authGroup.GET("/api/users/protect", func(ctx *gin.Context) {
-	// 	ctx.JSON(http.StatusOK, gin.H{
-	// 		"message": "Route Protected",
-	// 	})
-	// })
+	Authenticated := server.Group("/")
+	Authenticated.Use(middlewares.Authenticate)
+	Authenticated.GET("/api/status", dbHealthCheck)
+	Authenticated.GET("/api/users/", getUserByEmail)
+	Authenticated.PUT("/api/users/", updateUserByEmail)
 }
 
 func dbHealthCheck(ctx *gin.Context) {
