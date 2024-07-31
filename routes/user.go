@@ -49,5 +49,32 @@ func login(ctx *gin.Context) {
 		"message": "User Logged In",
 		"token":   token,
 	})
+}
 
+func getUserByEmail(ctx *gin.Context) {
+	var user models.User
+	user.Email = ctx.GetString("email")
+	user.GetUserByEmail()
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "User Logged In",
+		"email":   user,
+	})
+}
+
+func updateUserByEmail(ctx *gin.Context) {
+	var user models.User
+	user.Email = ctx.GetString("email")
+	user.GetUserByEmail()
+	ctx.ShouldBindJSON(&user)
+	err := user.UdpateUserByEmail()
+	if err != nil {
+		fmt.Print(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Could not update values",
+		})
+		return
+	}
+	ctx.JSON(http.StatusCreated, gin.H{
+		"message": "User Updated Successfully",
+	})
 }

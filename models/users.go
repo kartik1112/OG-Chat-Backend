@@ -44,9 +44,27 @@ func (u *User) ValidateUser() error {
 		return errors.New("invalid credentials")
 	}
 	err = utils.ValidatePassword(password, u.PasswordHash)
-	// return err
-	// if username == u.Username || email == u.Email {
-	// }
+	return err
+}
 
+func (u *User) GetUserByEmail() {
+	query := `SELECT userId, username, avatarurl, status, createdat,updatedat FROM public.users WHERE email = $1;`
+	row := db.DB.QueryRow(query, u.Email)
+	row.Scan(&u.UserID, &u.Username, &u.AvatarUrl, &u.Status, &u.CreatedAt, &u.UpdatedAt)
+}
+
+func (u *User) UdpateUserByEmail() error {
+	query := `UPDATE public.users
+			  SET username = $1, avatarurl=$2, status=$3, updatedat=CURRENT_TIMESTAMP
+			  WHERE email=$4;
+	`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(u.Username, u.AvatarUrl, u.Status, u.Email)
+	if err != nil {
+		return err
+	}
 	return err
 }

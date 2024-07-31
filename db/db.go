@@ -34,9 +34,9 @@ func InitDB() {
 
 func createTables() {
 	createUsersTable := `CREATE TABLE IF NOT EXISTS users (
-    userId SERIAL PRIMARY KEY,
+    userId SERIAL,
     username VARCHAR(255) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE PRIMARY KEY,
     passwordHash VARCHAR(255) NOT NULL,
     avatarUrl VARCHAR(255),
     status VARCHAR(255),
