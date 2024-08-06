@@ -14,6 +14,7 @@ func main() {
 	}
 	db.InitDB()
 	server := gin.Default()
+	server.LoadHTMLFiles("home.html")
 
 	routes.RegisterRoutes(server)
 

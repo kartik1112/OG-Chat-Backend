@@ -29,6 +29,8 @@ func signup(ctx *gin.Context) {
 func login(ctx *gin.Context) {
 	var user models.User
 	ctx.ShouldBindJSON(&user)
+	fmt.Println(user.Email)
+	fmt.Println(user.PasswordHash)
 	err := user.ValidateUser()
 	fmt.Print(user.UserID)
 	if err != nil {
