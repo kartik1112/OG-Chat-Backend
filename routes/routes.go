@@ -7,9 +7,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kartik1112/OG-Chat-Backend/db"
 	"github.com/kartik1112/OG-Chat-Backend/middlewares"
+	"github.com/kartik1112/OG-Chat-Backend/models"
 )
 
+var Hub models.Hub
+
 func RegisterRoutes(server *gin.Engine) {
+	Hub.NewHub()
+	go Hub.Run()
 	server.POST("/api/users/register", signup)
 	server.POST("/api/users/login", login)
 	Authenticated := server.Group("/")
@@ -17,6 +22,8 @@ func RegisterRoutes(server *gin.Engine) {
 	Authenticated.GET("/api/status", dbHealthCheck)
 	Authenticated.GET("/api/users/", getUserByEmail)
 	Authenticated.PUT("/api/users/", updateUserByEmail)
+	server.GET("/echo", checkServer)
+	server.GET("/ws", chatInit)
 }
 
 func dbHealthCheck(ctx *gin.Context) {
