@@ -8,7 +8,8 @@ import (
 )
 
 func chatInit(ctx *gin.Context) {
-	models.StartWs(&Hub, ctx.Writer, ctx.Request)
+	email := ctx.GetHeader("email")
+	models.StartWs(email, &Hub, ctx.Writer, ctx.Request)
 }
 
 func checkServer(ctx *gin.Context) {

@@ -22,8 +22,8 @@ func RegisterRoutes(server *gin.Engine) {
 	Authenticated.GET("/api/status", dbHealthCheck)
 	Authenticated.GET("/api/users/", getUserByEmail)
 	Authenticated.PUT("/api/users/", updateUserByEmail)
-	server.GET("/echo", checkServer)
-	server.GET("/ws", chatInit)
+	// server.GET("/echo", checkServer)
+	Authenticated.GET("/ws", chatInit)
 }
 
 func dbHealthCheck(ctx *gin.Context) {
