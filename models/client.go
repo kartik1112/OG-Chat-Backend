@@ -2,6 +2,7 @@ package models
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -10,9 +11,11 @@ import (
 )
 
 type Client struct {
-	conn *websocket.Conn
-	send chan []byte
-	hub  *Hub
+	conn      *websocket.Conn
+	send      chan []byte
+	hub       *Hub
+	selfEmail string
+	toEmail   string
 }
 
 var (
@@ -55,7 +58,18 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.hub.broadcast <- message
+		// c.hub.broadcast <- message
+		if bytes.HasPrefix(message, []byte("/dm ")) {
+			parts := bytes.SplitN(message, space, 3)
+			if len(parts) == 3 {
+				to := string(parts[1])
+				fmt.Print(to)
+				msg := parts[2]
+				c.hub.SendDirectMessage(to, msg)
+			}
+		} else {
+			c.hub.broadcast <- message
+		}
 	}
 
 }
@@ -97,17 +111,19 @@ func (c *Client) writePump() {
 	}
 }
 
-func StartWs(hub *Hub, w http.ResponseWriter, r *http.Request) error {
+func StartWs(email string, hub *Hub, w http.ResponseWriter, r *http.Request) error {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return err
 	}
-
 	client := &Client{
-		hub:  hub,
-		conn: conn,
-		send: make(chan []byte),
+		hub:       hub,
+		conn:      conn,
+		send:      make(chan []byte),
+		selfEmail: email,
 	}
+	fmt.Print(client.selfEmail)
+
 	client.hub.register <- client
 
 	go client.writePump()
